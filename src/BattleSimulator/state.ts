@@ -133,8 +133,8 @@ export class ApplySpeedDebuff implements Modifier {
   }
 }
 export class SkillDefinition {
-  readonly teamModifiers: Modifier[];
-  readonly opposingTeamModifiers: Modifier[];
+  teamModifiers: Modifier[];
+  opposingTeamModifiers: Modifier[];
   constructor({
     teamModifiers = [],
     opposingTeamModifiers = []

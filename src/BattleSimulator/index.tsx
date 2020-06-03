@@ -1,19 +1,10 @@
-import React from "react";
-import {
-  Button,
-  ButtonGroup,
-  Container,
-  Form,
-  Col,
-  Row,
-  ListGroup,
-  Badge
-} from "react-bootstrap";
-import { useReducer } from "react";
-import { battleReducer, initialArenaState } from "./battleReducer";
+import React from 'react';
+import { Button, ButtonGroup, Container, Form, Col, Row, ListGroup, Badge } from 'react-bootstrap';
+import { useReducer } from 'react';
+import { battleReducer, initialArenaState } from './battleReducer';
 
-import { Ticker } from "./Ticker";
-import { Champion, ChampionProps } from "./Champion";
+import { Ticker } from './Ticker';
+import { Champion, ChampionProps } from './Champion';
 
 import {
   ChampionId,
@@ -28,13 +19,13 @@ import {
   ChampionState,
   ChampionGameState,
   sameChampion,
-  SkillDefinition
-} from "./state";
+  SkillDefinition,
+} from './state';
 
 function ChampionInfo(props: ChampionId) {
   return (
     <>
-      <Badge variant={props.team === "team1" ? "warning" : "info"}>
+      <Badge variant={props.team === 'team1' ? 'warning' : 'info'}>
         {props.team} champ{props.champ + 1}
       </Badge>
     </>
@@ -50,8 +41,8 @@ function BattleLog({ events = [] }: BattleLogProps) {
       {events.map(({ info, champ, team, order }) => {
         return (
           <ListGroup.Item>
-            <b>{order}</b>: Champion <ChampionInfo {...{ champ, team }} /> used{" "}
-            <span style={{ fontWeight: "bold" }}>{info}</span> skill
+            <b>{order}</b>: Champion <ChampionInfo {...{ champ, team }} /> used{' '}
+            <span style={{ fontWeight: 'bold' }}>{info}</span> skill
           </ListGroup.Item>
         );
       })}
@@ -59,23 +50,17 @@ function BattleLog({ events = [] }: BattleLogProps) {
   );
 }
 type TeamProps = {
-  onSpeedChanged: ChampionProps["onSpeedChanged"];
+  onSpeedChanged: ChampionProps['onSpeedChanged'];
   activeMember?: ChampionId;
   team: TeamSpots;
   teamMembers: ChampionState[];
   teamMembersGameData: ChampionGameState[];
 };
-function Team({
-  onSpeedChanged,
-  activeMember,
-  team,
-  teamMembers,
-  teamMembersGameData
-}: TeamProps) {
+function Team({ onSpeedChanged, activeMember, team, teamMembers, teamMembersGameData }: TeamProps) {
   const indexedTeam = teamMembers.map((state, champ) => ({
     team,
     champ,
-    state
+    state,
   }));
 
   function isActive(championId: ChampionId) {
@@ -83,7 +68,7 @@ function Team({
   }
 
   function getGameData(id: ChampionId) {
-    return teamMembersGameData.find(m => sameChampion(id, m));
+    return teamMembersGameData.find((m) => sameChampion(id, m));
   }
 
   return (
@@ -93,12 +78,9 @@ function Team({
           return (
             <Col sm={6} md={6} lg={3} key={`${team}-${champ}`}>
               <Champion
-                {...{ team, champ, state }}
+                {...{ team, champ, state, onSpeedChanged }}
                 gameState={getGameData({ team, champ })}
                 currentlyActive={isActive({ champ, team })}
-                onSpeedChanged={payload =>
-                  onSpeedChanged({ champ, team, ...payload })
-                }
               />
             </Col>
           );
@@ -109,21 +91,18 @@ function Team({
 }
 
 export function BattleSimulator() {
-  const [arenaState, arenaDispatch] = useReducer(
-    battleReducer,
-    initialArenaState
-  );
+  const [arenaState, arenaDispatch] = useReducer(battleReducer, initialArenaState);
   const { turnOwner } = arenaState.game;
 
   const enabled = turnOwner === undefined && arenaState.activeGame;
 
   function dispatchUseSkill(skill: SkillDefinition) {
     arenaDispatch({
-      type: "UseSkill",
+      type: 'UseSkill',
       payload: {
         skill,
-        ...turnOwner!
-      }
+        ...turnOwner!,
+      },
     });
   }
   const skills = [
@@ -131,11 +110,11 @@ export function BattleSimulator() {
     aoe30SpeedDebuffEnemy,
     aoe30TurnMeterFill30SpeedBuffEnemy30TurnMeterDecrease,
     aoe20TurnMeterFill,
-    aoe30TurnMeterFill
+    aoe30TurnMeterFill,
   ];
   return (
     <>
-      <Ticker enable={enabled} onTick={() => arenaDispatch({ type: "Tick" })} />
+      <Ticker enable={enabled} onTick={() => arenaDispatch({ type: 'Tick' })} />
 
       <h1>Turn Simulator</h1>
 
@@ -153,19 +132,13 @@ export function BattleSimulator() {
                         inline
                         id="continuous-ticks"
                         label="Emit ticks continuously"
-                        onChange={() => arenaDispatch({ type: "ToggleBattle" })}
+                        onChange={() => arenaDispatch({ type: 'ToggleBattle' })}
                         checked={arenaState.activeGame}
                       />
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() => arenaDispatch({ type: "Tick" })}
-                      >
+                      <Button variant="outline-secondary" onClick={() => arenaDispatch({ type: 'Tick' })}>
                         Emit single tick
-                      </Button>{" "}
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() => arenaDispatch({ type: "Reset" })}
-                      >
+                      </Button>{' '}
+                      <Button variant="outline-secondary" onClick={() => arenaDispatch({ type: 'Reset' })}>
                         Reset
                       </Button>
                     </Col>
@@ -180,21 +153,14 @@ export function BattleSimulator() {
                   <Row>
                     <Col>
                       <ButtonGroup vertical>
-                        {skills.map(s => (
-                          <Button
-                            variant="outline-secondary"
-                            onClick={() => dispatchUseSkill(s)}
-                          >
+                        {skills.map((s) => (
+                          <Button variant="outline-secondary" onClick={() => dispatchUseSkill(s)}>
                             {s.toString()}
                           </Button>
                         ))}
 
-                        <Button
-                          variant="outline-primary"
-                          onClick={() => dispatchUseSkill(defaultSkill)}
-                        >
-                          Make a move using {defaultSkill.toString()} skill not
-                          affecting speed
+                        <Button variant="outline-primary" onClick={() => dispatchUseSkill(defaultSkill)}>
+                          Make a move using {defaultSkill.toString()} skill not affecting speed
                         </Button>
                       </ButtonGroup>
                     </Col>
@@ -202,7 +168,7 @@ export function BattleSimulator() {
                 </Container>
               </>
             )}
-            <hr style={{ marginBottom: "40px" }} />
+            <hr style={{ marginBottom: '40px' }} />
 
             <h4>
               <Badge variant="warning">Your team</Badge>
@@ -213,15 +179,15 @@ export function BattleSimulator() {
               team="team1"
               teamMembers={arenaState.teams.team1}
               teamMembersGameData={arenaState.game.participants}
-              onSpeedChanged={payload =>
+              onSpeedChanged={(payload) =>
                 arenaDispatch({
-                  type: "SpeedChanged",
-                  payload
+                  type: 'SpeedChanged',
+                  payload,
                 })
               }
             />
 
-            <hr style={{ marginBottom: "40px" }} />
+            <hr style={{ marginBottom: '40px' }} />
 
             <h4>
               <Badge variant="info">Enemy team</Badge>
@@ -231,14 +197,14 @@ export function BattleSimulator() {
               team="team2"
               teamMembers={arenaState.teams.team2}
               teamMembersGameData={arenaState.game.participants}
-              onSpeedChanged={payload =>
+              onSpeedChanged={(payload) =>
                 arenaDispatch({
-                  type: "SpeedChanged",
-                  payload
+                  type: 'SpeedChanged',
+                  payload,
                 })
               }
             />
-            <hr style={{ marginBottom: "40px" }} />
+            <hr style={{ marginBottom: '40px' }} />
           </Col>
 
           <Col lg={3}>
@@ -252,7 +218,7 @@ export function BattleSimulator() {
                     </Col>
                   </Row>
                 </Container>
-                <hr style={{ marginBottom: "40px" }} />
+                <hr style={{ marginBottom: '40px' }} />
               </>
             )}
           </Col>

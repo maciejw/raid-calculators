@@ -1,20 +1,10 @@
-import React, { useState } from "react";
-import {
-  Form,
-  Alert,
-  FormControlProps,
-  ButtonGroup,
-  Button
-} from "react-bootstrap";
-import {
-  calculateRealSpeedFromArtifacts,
-  calculateRealSpeedFromTotal,
-  ROUND_TO_DECIMAL_PLACES
-} from "./speed";
+import React, { useState } from 'react';
+import { Form, Alert, FormControlProps, ButtonGroup, Button } from 'react-bootstrap';
+import { calculateRealSpeedFromArtifacts, calculateRealSpeedFromTotal, ROUND_TO_DECIMAL_PLACES } from './speed';
 
 const calculationModes = {
   calculateRealSpeedFromArtifacts,
-  calculateRealSpeedFromTotal
+  calculateRealSpeedFromTotal,
 };
 
 function toInt(value: string) {
@@ -30,7 +20,7 @@ function toSpeedSetNumber(value: string): SpeedSetNumber {
 }
 type SpeedSetNumber = 0 | 1 | 2 | 3;
 
-type Mode = keyof typeof calculationModes | "none";
+type Mode = keyof typeof calculationModes | 'none';
 
 type State = {
   baseSpeed: number;
@@ -53,12 +43,12 @@ export function SpeedCalculator() {
     totalSpeed: 0,
     numberOfSpeedSets: 0,
     loreOfSteelPresent: false,
-    mode: "none",
-    result: undefined
+    mode: 'none',
+    result: undefined,
   });
 
   function calculate(state: State) {
-    if (state.mode !== "none") {
+    if (state.mode !== 'none') {
       return calculationModes[state.mode](state);
     }
   }
@@ -73,30 +63,22 @@ export function SpeedCalculator() {
       <div>
         <ButtonGroup>
           <Button
-            variant={
-              state.mode === "calculateRealSpeedFromTotal"
-                ? "primary"
-                : "secondary"
-            }
+            variant={state.mode === 'calculateRealSpeedFromTotal' ? 'primary' : 'secondary'}
             onClick={() =>
               updateAndRecalculate({
                 ...state,
-                mode: "calculateRealSpeedFromTotal"
+                mode: 'calculateRealSpeedFromTotal',
               })
             }
           >
             Calculate from total speed
           </Button>
           <Button
-            variant={
-              state.mode === "calculateRealSpeedFromArtifacts"
-                ? "primary"
-                : "secondary"
-            }
+            variant={state.mode === 'calculateRealSpeedFromArtifacts' ? 'primary' : 'secondary'}
             onClick={() =>
               updateAndRecalculate({
                 ...state,
-                mode: "calculateRealSpeedFromArtifacts"
+                mode: 'calculateRealSpeedFromArtifacts',
               })
             }
           >
@@ -111,10 +93,10 @@ export function SpeedCalculator() {
           {state.result.toFixed(ROUND_TO_DECIMAL_PLACES)}
         </Alert>
       )}
-      {state.mode === "calculateRealSpeedFromTotal" && (
+      {state.mode === 'calculateRealSpeedFromTotal' && (
         <TotalSpeedCalculator update={updateAndRecalculate} state={state} />
       )}
-      {state.mode === "calculateRealSpeedFromArtifacts" && (
+      {state.mode === 'calculateRealSpeedFromArtifacts' && (
         <ArtifactSpeedCalculator update={updateAndRecalculate} state={state} />
       )}
     </Form>
@@ -127,12 +109,7 @@ type FieldProps = {
   onInput: React.FormEventHandler<HTMLInputElement>;
 };
 
-function TextField({
-  controlId,
-  label,
-  value,
-  onInput
-}: FieldProps & { value: FormControlProps["value"] }) {
+function TextField({ controlId, label, value, onInput }: FieldProps & { value: FormControlProps['value'] }) {
   return (
     <Form.Group controlId={controlId}>
       <Form.Label>{label}</Form.Label>
@@ -141,20 +118,10 @@ function TextField({
   );
 }
 
-function CheckField({
-  controlId,
-  label,
-  checked,
-  onInput: onChange
-}: FieldProps & { checked: boolean }) {
+function CheckField({ controlId, label, checked, onInput: onChange }: FieldProps & { checked: boolean }) {
   return (
     <Form.Group controlId={controlId}>
-      <Form.Check
-        type="checkbox"
-        inline
-        checked={checked}
-        onChange={onChange}
-      />
+      <Form.Check type="checkbox" inline checked={checked} onChange={onChange} />
       <Form.Label>{label}</Form.Label>
     </Form.Group>
   );
@@ -171,7 +138,7 @@ function AuraField({ state, update }: CalculatorFieldProps) {
       controlId="aura"
       label="Aura"
       value={state.aura}
-      onInput={e => update({ ...state, aura: toInt(e.currentTarget.value) })}
+      onInput={(e) => update({ ...state, aura: toInt(e.currentTarget.value) })}
     />
   );
 }
@@ -182,9 +149,7 @@ function BaseSpeedField({ state, update }: CalculatorFieldProps) {
       controlId="base-speed"
       label="Base speed"
       value={state.baseSpeed}
-      onInput={e =>
-        update({ ...state, baseSpeed: toInt(e.currentTarget.value) })
-      }
+      onInput={(e) => update({ ...state, baseSpeed: toInt(e.currentTarget.value) })}
     />
   );
 }
@@ -195,9 +160,7 @@ function TotalSpeedField({ state, update }: CalculatorFieldProps) {
       controlId="total-speed"
       label="Total speed"
       value={state.totalSpeed}
-      onInput={e =>
-        update({ ...state, totalSpeed: toInt(e.currentTarget.value) })
-      }
+      onInput={(e) => update({ ...state, totalSpeed: toInt(e.currentTarget.value) })}
     />
   );
 }
@@ -208,9 +171,7 @@ function ArtifactSpeedField({ state, update }: CalculatorFieldProps) {
       controlId="artifact-speed"
       label="Artifact speed"
       value={state.artifactSpeed}
-      onInput={e =>
-        update({ ...state, artifactSpeed: toFloat(e.currentTarget.value) })
-      }
+      onInput={(e) => update({ ...state, artifactSpeed: toFloat(e.currentTarget.value) })}
     />
   );
 }
@@ -221,10 +182,10 @@ function NumberOfSpeedSetsField({ state, update }: CalculatorFieldProps) {
       controlId="number-of-speed-sets"
       label="Number of speed sets"
       value={state.numberOfSpeedSets}
-      onInput={e =>
+      onInput={(e) =>
         update({
           ...state,
-          numberOfSpeedSets: toSpeedSetNumber(e.currentTarget.value)
+          numberOfSpeedSets: toSpeedSetNumber(e.currentTarget.value),
         })
       }
     />
@@ -240,7 +201,7 @@ function LoreOfSteelPresentField({ state, update }: CalculatorFieldProps) {
       onInput={() =>
         update({
           ...state,
-          loreOfSteelPresent: !state.loreOfSteelPresent
+          loreOfSteelPresent: !state.loreOfSteelPresent,
         })
       }
     />

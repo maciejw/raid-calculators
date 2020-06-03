@@ -95,13 +95,13 @@ export function calculateRealSpeedFromArtifacts({
   const speedSetBonusRounded = numberRoundDecimal(speedSetBonus);
   log("speedSetBonusRounded", speedSetBonusRounded);
 
-  const artifactStatSubstatSpeed = artifactSpeed - speedSetBonusRounded;
-  log("realArtifactSpeed", artifactStatSubstatSpeed);
+  const artifactStatSubStatSpeed = artifactSpeed - speedSetBonusRounded;
+  log("realArtifactSpeed", artifactStatSubStatSpeed);
 
   const realSpeedBeforeRounding =
     baseSpeed +
     auraBonus +
-    artifactStatSubstatSpeed +
+    artifactStatSubStatSpeed +
     speedSetBonus +
     loreOfSteelBonus;
   log("realSpeedBeforeRounding", realSpeedBeforeRounding);

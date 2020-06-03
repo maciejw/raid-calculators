@@ -133,7 +133,7 @@ export function battleReducer(
     case "UseSkill": {
       if (state.game.turnOwner) {
         const { team, champ } = state.game.turnOwner;
-        const opposingTeam = getOposingTeam(team);
+        const opposingTeam = getOpposingTeam(team);
         const { payload } = action;
 
         let participants = modifyParticipants(
@@ -191,15 +191,15 @@ export function battleReducer(
   }
 }
 
-function getOposingTeam(taam: TeamSpots): TeamSpots {
-  if (taam === "team1") return "team2";
+function getOpposingTeam(team: TeamSpots): TeamSpots {
+  if (team === "team1") return "team2";
   return "team1";
 }
 
 function applyModifiers(participant: ChampionGameState, modifiers: Modifier[]) {
   let result = participant;
-  for (const midifier of modifiers) {
-    result = midifier.apply(participant);
+  for (const modifier of modifiers) {
+    result = modifier.apply(participant);
   }
   return result;
 }

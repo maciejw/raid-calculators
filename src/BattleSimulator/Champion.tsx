@@ -1,13 +1,7 @@
-import React from "react";
-import { Card, Form, Row, Col, Badge } from "react-bootstrap";
-import {
-  ChampionState,
-  ChampionId,
-  SpeedChange,
-  BuffDebuff,
-  ChampionGameState
-} from "./state";
-import { ProgressBar } from "./ProgressBar";
+import React from 'react';
+import { Card, Form, Row, Col, Badge } from 'react-bootstrap';
+import { ChampionState, ChampionId, SpeedChange, BuffDebuff, ChampionGameState } from './state';
+import { ProgressBar } from './ProgressBar';
 
 function toFloat(str: string) {
   return parseFloat(str) || 0;
@@ -20,39 +14,28 @@ export type ChampionProps = {
   onSpeedChanged: (args: SpeedChange) => void;
 } & ChampionId;
 
-function BuffsDebufsInfo(
+function BuffsDebuffsInfo(
   props: { info: BuffDebuff[] } & {
-    type: "buff" | "debuff";
+    type: 'buff' | 'debuff';
   }
 ) {
   return (
     <>
-      {props.info.map(i => (
+      {props.info.map((i) => (
         <>
-          <Badge variant={props.type === "buff" ? "primary" : "danger"}>
+          <Badge variant={props.type === 'buff' ? 'primary' : 'danger'}>
             {i.name} {i.value}% turns {i.turns}
-          </Badge>{" "}
+          </Badge>{' '}
         </>
       ))}
     </>
   );
 }
 
-export function Champion({
-  champ,
-  team,
-  state,
-  gameState,
-  currentlyActive,
-  onSpeedChanged
-}: ChampionProps) {
+export function Champion({ champ, team, state, gameState, currentlyActive, onSpeedChanged }: ChampionProps) {
   const championId = { champ, team };
   return (
-    <Card
-      bg="light"
-      border={currentlyActive ? "primary" : undefined}
-      style={{ marginBottom: "20px" }}
-    >
+    <Card bg="light" border={currentlyActive ? 'primary' : undefined} style={{ marginBottom: '20px' }}>
       <Card.Header>
         {team} champ{champ + 1}
       </Card.Header>
@@ -71,10 +54,10 @@ export function Champion({
               <Col>
                 <Form.Control
                   value={state.speed}
-                  onChange={e =>
+                  onChange={(e) =>
                     onSpeedChanged({
                       ...championId,
-                      speed: toFloat(e.target.value)
+                      speed: toFloat(e.target.value),
                     })
                   }
                 />
@@ -82,8 +65,8 @@ export function Champion({
             </Form.Group>
             {gameState && (
               <>
-                <BuffsDebufsInfo type="buff" info={gameState.buffs} />
-                <BuffsDebufsInfo type="debuff" info={gameState.deBuffs} />
+                <BuffsDebuffsInfo type="buff" info={gameState.buffs} />
+                <BuffsDebuffsInfo type="debuff" info={gameState.deBuffs} />
               </>
             )}
           </Form>
