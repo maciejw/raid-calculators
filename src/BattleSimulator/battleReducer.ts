@@ -10,16 +10,16 @@ import {
   ChampionGameState,
   sameChampion,
   sameChampionOrTeam,
-  ChampionFilterCriteria
-} from "./state";
+  ChampionFilterCriteria,
+} from './state';
 
 export const initialArenaState: BattleState = {
   activeGame: false,
   battleEvents: [],
   game: {
-    participants: []
+    participants: [],
   },
-  teams: fillChampionSpots(5, 1)
+  teams: fillChampionSpots(5, 1),
 };
 
 function modifyParticipants(
@@ -28,20 +28,20 @@ function modifyParticipants(
   modify: (participant: ChampionGameState) => ChampionGameState
 ) {
   return [
-    ...participants.filter(p => !sameChampionOrTeam(filteringCriteria, p)),
+    ...participants.filter((p) => !sameChampionOrTeam(filteringCriteria, p)),
     ...participants
-      .filter(p => sameChampionOrTeam(filteringCriteria, p))
-      .map(modify)
+      .filter((p) => sameChampionOrTeam(filteringCriteria, p))
+      .map(modify),
   ];
 }
 
 const newParticipantDefaults: ChampionGameState = {
   champ: 0,
-  team: "team1",
+  team: 'team1',
   speed: 0,
   turnMeter: 0,
   buffs: [],
-  deBuffs: []
+  deBuffs: [],
 };
 
 export function battleReducer(
@@ -49,14 +49,14 @@ export function battleReducer(
   action: Actions
 ): BattleState {
   switch (action.type) {
-    case "SpeedChanged": {
+    case 'SpeedChanged': {
       const { team, champ, speed } = action.payload;
 
       const otherParticipants = state.game.participants.filter(
-        p => !sameChampion(p, { team, champ })
+        (p) => !sameChampion(p, { team, champ })
       );
 
-      let currentParticipant = state.game.participants.find(p =>
+      let currentParticipant = state.game.participants.find((p) =>
         sameChampion(p, { team, champ })
       );
 
@@ -64,7 +64,7 @@ export function battleReducer(
         currentParticipant = {
           ...newParticipantDefaults,
           team,
-          champ
+          champ,
         };
       }
 
@@ -72,12 +72,12 @@ export function battleReducer(
         ...state,
         game: {
           ...state.game,
-          participants: [...otherParticipants, currentParticipant]
+          participants: [...otherParticipants, currentParticipant],
         },
         teams: {
           ...state.teams,
-          [team]: [...state.teams[team]]
-        }
+          [team]: [...state.teams[team]],
+        },
       };
 
       newState.teams[team][champ] = { ...state.teams[team][champ], speed };
@@ -85,25 +85,25 @@ export function battleReducer(
       newState.game.participants = modifyParticipants(
         newState.game.participants,
         { team, champ },
-        participant => ({ ...participant, speed })
+        (participant) => ({ ...participant, speed })
       );
 
       return newState;
     }
-    case "ToggleBattle": {
+    case 'ToggleBattle': {
       return {
         ...state,
-        activeGame: !state.activeGame
+        activeGame: !state.activeGame,
       };
     }
-    case "Tick": {
+    case 'Tick': {
       if (state.game.participants.length > 0) {
         const newState: BattleState = {
           ...state,
           game: {
             ...state.game,
-            participants: updateTurnMeter(state.game.participants)
-          }
+            participants: updateTurnMeter(state.game.participants),
+          },
         };
         const orderedChampions = orderChampionsByTurnMeter(newState);
 
@@ -118,19 +118,19 @@ export function battleReducer(
       }
       return state;
     }
-    case "Reset": {
+    case 'Reset': {
       const newState: BattleState = {
         ...state,
         battleEvents: [],
         game: {
           ...state.game,
-          participants: resetTurnMeterAndBuffsDeBuffs(state.game.participants)
-        }
+          participants: resetTurnMeterAndBuffsDeBuffs(state.game.participants),
+        },
       };
 
       return newState;
     }
-    case "UseSkill": {
+    case 'UseSkill': {
       if (state.game.turnOwner) {
         const { team, champ } = state.game.turnOwner;
         const opposingTeam = getOpposingTeam(team);
@@ -139,27 +139,30 @@ export function battleReducer(
         let participants = modifyParticipants(
           state.game.participants,
           { team, champ },
-          participant => {
+          (participant) => {
             const newParticipant = { ...participant, turnMeter: 0 };
             newParticipant.buffs = newParticipant.buffs
-              .map(b => ({ ...b, turns: --b.turns }))
-              .filter(b => b.turns > 0);
+              .map((b) => ({ ...b, turns: --b.turns }))
+              .filter((b) => b.turns > 0);
             newParticipant.deBuffs = newParticipant.deBuffs
-              .map(b => ({ ...b, turns: --b.turns }))
-              .filter(b => b.turns > 0);
+              .map((b) => ({ ...b, turns: --b.turns }))
+              .filter((b) => b.turns > 0);
 
             return newParticipant;
           }
         );
 
-        participants = modifyParticipants(participants, { team }, participant =>
-          applyModifiers(participant, payload.skill.teamModifiers)
+        participants = modifyParticipants(
+          participants,
+          { team },
+          (participant) =>
+            applyModifiers(participant, payload.skill.teamModifiers)
         );
 
         participants = modifyParticipants(
           participants,
           { team: opposingTeam },
-          participant =>
+          (participant) =>
             applyModifiers(participant, payload.skill.opposingTeamModifiers)
         );
 
@@ -171,14 +174,14 @@ export function battleReducer(
               champ,
               team,
               info: payload.skill.toString(),
-              order: state.battleEvents.length + 1
-            }
+              order: state.battleEvents.length + 1,
+            },
           ],
           game: {
             ...state.game,
             participants,
-            turnOwner: undefined
-          }
+            turnOwner: undefined,
+          },
         };
 
         return newState;
@@ -187,13 +190,13 @@ export function battleReducer(
       }
     }
     default:
-      throw new Error("unknown dispatch type");
+      throw new Error('unknown dispatch type');
   }
 }
 
 function getOpposingTeam(team: TeamSpots): TeamSpots {
-  if (team === "team1") return "team2";
-  return "team1";
+  if (team === 'team1') return 'team2';
+  return 'team1';
 }
 
 function applyModifiers(participant: ChampionGameState, modifiers: Modifier[]) {

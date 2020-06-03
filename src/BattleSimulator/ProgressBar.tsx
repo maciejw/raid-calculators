@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { numberRoundDecimal } from "../SpeedCalculator/speed";
 
 export function ProgressBar({ filled = 0 }) {

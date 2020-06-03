@@ -1,9 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { useEffect } from "react";
 
 export function Ticker({
   onTick,
-  enable = false
+  enable = false,
 }: {
   onTick: () => void;
   enable?: boolean;

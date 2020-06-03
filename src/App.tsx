@@ -1,18 +1,18 @@
-import React from "react";
-import "./styles.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { SpeedCalculator } from "./SpeedCalculator";
-import { BattleSimulator } from "./BattleSimulator";
-import { Container } from "react-bootstrap";
+import React from 'react';
+import './styles.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { SpeedCalculator } from './SpeedCalculator';
+import { BattleSimulator } from './BattleSimulator';
+import { Container } from 'react-bootstrap';
 
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { Navigation } from "./Navigation";
+import { Navigation } from './Navigation';
 
-export default function App() {
+export default function App(): JSX.Element {
   return (
     <Container fluid>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <>
           <Navigation />
           <Switch>

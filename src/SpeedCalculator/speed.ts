@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 let log: typeof console.log = () => {};
 log = console.log;
 
@@ -25,43 +26,43 @@ export function calculateRealSpeedFromTotal({
   totalSpeed,
   aura = 0,
   loreOfSteelPresent = false,
-  numberOfSpeedSets = 0
-}: SpeedTotalParameters) {
-  log("input parameters", {
+  numberOfSpeedSets = 0,
+}: SpeedTotalParameters): number {
+  log('input parameters', {
     baseSpeed,
     totalSpeed,
     aura,
     loreOfSteelPresent,
-    numberOfSpeedSets
+    numberOfSpeedSets,
   });
 
   const auraBonus = getAuraBonus(baseSpeed, aura);
-  log("auraBonus", auraBonus);
+  log('auraBonus', auraBonus);
 
   const loreOfSteelBonus = getLoreOfSteelBonus(
     baseSpeed,
     numberOfSpeedSets,
     loreOfSteelPresent
   );
-  log("loreOfSteelBonus", loreOfSteelBonus);
+  log('loreOfSteelBonus', loreOfSteelBonus);
 
   const loreOfSteelBonusRounded = numberRoundDecimal(loreOfSteelBonus);
-  log("loreOfSteelBonusRounded", loreOfSteelBonusRounded);
+  log('loreOfSteelBonusRounded', loreOfSteelBonusRounded);
 
   const speedSetBonus = getSpeedSetBonus(baseSpeed, numberOfSpeedSets);
-  log("speedSetBonus", speedSetBonus);
+  log('speedSetBonus', speedSetBonus);
 
   const speedSetBonusRounded = numberRoundDecimal(speedSetBonus);
-  log("speedSetBonusRounded", speedSetBonusRounded);
+  log('speedSetBonusRounded', speedSetBonusRounded);
 
   const artifactSpeed =
     totalSpeed - baseSpeed - loreOfSteelBonusRounded - speedSetBonusRounded;
-  log("artifactSpeed", artifactSpeed);
+  log('artifactSpeed', artifactSpeed);
 
   const realSpeedBeforeRounding =
     auraBonus + baseSpeed + speedSetBonus + loreOfSteelBonus + artifactSpeed;
 
-  log("realSpeedBeforeRounding", realSpeedBeforeRounding);
+  log('realSpeedBeforeRounding', realSpeedBeforeRounding);
   return numberRoundDecimal(realSpeedBeforeRounding, ROUND_TO_DECIMAL_PLACES);
 }
 export function calculateRealSpeedFromArtifacts({
@@ -69,34 +70,34 @@ export function calculateRealSpeedFromArtifacts({
   artifactSpeed,
   aura = 0,
   loreOfSteelPresent = false,
-  numberOfSpeedSets = 0
-}: SpeedComponentParameters) {
-  log("input parameters", {
+  numberOfSpeedSets = 0,
+}: SpeedComponentParameters): number {
+  log('input parameters', {
     baseSpeed,
     artifactSpeed,
     aura,
     loreOfSteelPresent,
-    numberOfSpeedSets
+    numberOfSpeedSets,
   });
 
   const auraBonus = getAuraBonus(baseSpeed, aura);
-  log("auraBonus", auraBonus);
+  log('auraBonus', auraBonus);
 
   const loreOfSteelBonus = getLoreOfSteelBonus(
     baseSpeed,
     numberOfSpeedSets,
     loreOfSteelPresent
   );
-  log("loreOfSteelBonus", loreOfSteelBonus);
+  log('loreOfSteelBonus', loreOfSteelBonus);
 
   const speedSetBonus = getSpeedSetBonus(baseSpeed, numberOfSpeedSets);
-  log("speedSetBonus", speedSetBonus);
+  log('speedSetBonus', speedSetBonus);
 
   const speedSetBonusRounded = numberRoundDecimal(speedSetBonus);
-  log("speedSetBonusRounded", speedSetBonusRounded);
+  log('speedSetBonusRounded', speedSetBonusRounded);
 
   const artifactStatSubStatSpeed = artifactSpeed - speedSetBonusRounded;
-  log("realArtifactSpeed", artifactStatSubStatSpeed);
+  log('realArtifactSpeed', artifactStatSubStatSpeed);
 
   const realSpeedBeforeRounding =
     baseSpeed +
@@ -104,7 +105,7 @@ export function calculateRealSpeedFromArtifacts({
     artifactStatSubStatSpeed +
     speedSetBonus +
     loreOfSteelBonus;
-  log("realSpeedBeforeRounding", realSpeedBeforeRounding);
+  log('realSpeedBeforeRounding', realSpeedBeforeRounding);
 
   return numberRoundDecimal(realSpeedBeforeRounding, ROUND_TO_DECIMAL_PLACES);
 }
@@ -112,7 +113,7 @@ function getAuraBonus(baseSpeed: number, aura: number) {
   const auraMultiplier = aura / 100;
   return baseSpeed * auraMultiplier;
 }
-export function numberRoundDecimal(number: number, decimalPlaces: number = 0) {
+export function numberRoundDecimal(number: number, decimalPlaces = 0): number {
   return (
     Math.round((number + Number.EPSILON) * Math.pow(10, decimalPlaces)) /
     Math.pow(10, decimalPlaces)
