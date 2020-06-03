@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/raid-calculators/static/css/main.c4122063.chunk.css",
+    "main.js": "/raid-calculators/static/js/main.4ee610e1.chunk.js",
+    "main.js.map": "/raid-calculators/static/js/main.4ee610e1.chunk.js.map",
+    "runtime-main.js": "/raid-calculators/static/js/runtime-main.48035303.js",
+    "runtime-main.js.map": "/raid-calculators/static/js/runtime-main.48035303.js.map",
+    "static/css/2.0e1a4c73.chunk.css": "/raid-calculators/static/css/2.0e1a4c73.chunk.css",
+    "static/js/2.fa708d64.chunk.js": "/raid-calculators/static/js/2.fa708d64.chunk.js",
+    "static/js/2.fa708d64.chunk.js.map": "/raid-calculators/static/js/2.fa708d64.chunk.js.map",
+    "index.html": "/raid-calculators/index.html",
+    "precache-manifest.cb7a1287794c83df7ce0b5f9aec5a7bc.js": "/raid-calculators/precache-manifest.cb7a1287794c83df7ce0b5f9aec5a7bc.js",
+    "service-worker.js": "/raid-calculators/service-worker.js",
+    "static/css/2.0e1a4c73.chunk.css.map": "/raid-calculators/static/css/2.0e1a4c73.chunk.css.map",
+    "static/css/main.c4122063.chunk.css.map": "/raid-calculators/static/css/main.c4122063.chunk.css.map",
+    "static/js/2.fa708d64.chunk.js.LICENSE.txt": "/raid-calculators/static/js/2.fa708d64.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.48035303.js",
+    "static/css/2.0e1a4c73.chunk.css",
+    "static/js/2.fa708d64.chunk.js",
+    "static/css/main.c4122063.chunk.css",
+    "static/js/main.4ee610e1.chunk.js"
+  ]
+}
