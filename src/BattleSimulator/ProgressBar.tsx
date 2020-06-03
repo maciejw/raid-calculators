@@ -1,13 +1,14 @@
 import * as React from "react";
+import { numberRoundDecimal } from "../SpeedCalculator/speed";
 
 export function ProgressBar({ filled = 0 }) {
   const proggressStyle: React.CSSProperties = {
-    width: `${filled}%`
+    width: `${Math.min(filled, 100)}%`
   };
   return (
     <div className="ProgressBar">
       <div className="Progress" style={proggressStyle}>
-        {filled}%
+        {numberRoundDecimal(filled, 2)}%
       </div>
     </div>
   );
