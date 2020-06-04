@@ -2,7 +2,6 @@ import {
   BattleState,
   Actions,
   updateTurnMeter,
-  orderChampionsByTurnMeter,
   TeamSpots,
   Modifier,
   resetTurnMeterAndBuffsDeBuffs,
@@ -11,10 +10,12 @@ import {
   sameChampion,
   sameChampionOrTeam,
   ChampionFilterCriteria,
-} from './state';
+  BuffDebuff,
+} from "./state";
+import { sortingSpecification } from "./compare";
 
-export const initialArenaState: BattleState = {
-  activeGame: false,
+export const initialBattleState: BattleState = {
+  isGameLoopRunning: false,
   battleEvents: [],
   game: {
     participants: [],
@@ -37,7 +38,7 @@ function modifyParticipants(
 
 const newParticipantDefaults: ChampionGameState = {
   champ: 0,
-  team: 'team1',
+  team: "team1",
   speed: 0,
   turnMeter: 0,
   buffs: [],
@@ -49,7 +50,7 @@ export function battleReducer(
   action: Actions
 ): BattleState {
   switch (action.type) {
-    case 'SpeedChanged': {
+    case "SpeedChanged": {
       const { team, champ, speed } = action.payload;
 
       const otherParticipants = state.game.participants.filter(
@@ -90,13 +91,13 @@ export function battleReducer(
 
       return newState;
     }
-    case 'ToggleBattle': {
+    case "ToggleBattle": {
       return {
         ...state,
-        activeGame: !state.activeGame,
+        isGameLoopRunning: !state.isGameLoopRunning,
       };
     }
-    case 'Tick': {
+    case "Tick": {
       if (state.game.participants.length > 0) {
         const newState: BattleState = {
           ...state,
@@ -105,7 +106,14 @@ export function battleReducer(
             participants: updateTurnMeter(state.game.participants),
           },
         };
-        const orderedChampions = orderChampionsByTurnMeter(newState);
+        const orderedChampions = newState.game.participants.sort(
+          sortingSpecification(
+            ["turnMeter", "desc"],
+            ["team"],
+            ["speed", "desc"],
+            ["champ"]
+          )
+        );
 
         const activeChampion = orderedChampions[0];
 
@@ -118,7 +126,7 @@ export function battleReducer(
       }
       return state;
     }
-    case 'Reset': {
+    case "Reset": {
       const newState: BattleState = {
         ...state,
         battleEvents: [],
@@ -130,7 +138,7 @@ export function battleReducer(
 
       return newState;
     }
-    case 'UseSkill': {
+    case "UseSkill": {
       if (state.game.turnOwner) {
         const { team, champ } = state.game.turnOwner;
         const opposingTeam = getOpposingTeam(team);
@@ -141,12 +149,9 @@ export function battleReducer(
           { team, champ },
           (participant) => {
             const newParticipant = { ...participant, turnMeter: 0 };
-            newParticipant.buffs = newParticipant.buffs
-              .map((b) => ({ ...b, turns: --b.turns }))
-              .filter((b) => b.turns > 0);
-            newParticipant.deBuffs = newParticipant.deBuffs
-              .map((b) => ({ ...b, turns: --b.turns }))
-              .filter((b) => b.turns > 0);
+
+            newParticipant.buffs = decrementBuffsDeBuffs(newParticipant.buffs)
+            newParticipant.deBuffs = decrementBuffsDeBuffs(newParticipant.deBuffs)
 
             return newParticipant;
           }
@@ -156,7 +161,7 @@ export function battleReducer(
           participants,
           { team },
           (participant) =>
-            applyModifiers(participant, payload.skill.teamModifiers)
+            applyModifiers(participant, payload.skill.currentTeamModifiers)
         );
 
         participants = modifyParticipants(
@@ -190,13 +195,19 @@ export function battleReducer(
       }
     }
     default:
-      throw new Error('unknown dispatch type');
+      throw new Error("unknown dispatch type");
   }
 }
 
+function decrementBuffsDeBuffs(buffsDeBuffs: BuffDebuff[]) {
+  return buffsDeBuffs
+    .map((b) => ({ ...b, turns: --b.turns }))
+    .filter((b) => b.turns > 0);
+}
+
 function getOpposingTeam(team: TeamSpots): TeamSpots {
-  if (team === 'team1') return 'team2';
-  return 'team1';
+  if (team === "team1") return "team2";
+  return "team1";
 }
 
 function applyModifiers(participant: ChampionGameState, modifiers: Modifier[]) {

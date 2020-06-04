@@ -1,4 +1,5 @@
 import { getFillRate } from "./turnMeter";
+import { sortingSpecification } from "./compare";
 
 export type BuffDebuffState = {
   value: number;
@@ -34,7 +35,7 @@ export type BattleLogEvent = {
 export type BattleState = { battleEvents: BattleLogEvent[] } & {
   teams: TeamsState;
 } & { game: GameState } & {
-  activeGame: boolean;
+  isGameLoopRunning: boolean;
 };
 
 export type ChampionId = { champ: number; team: TeamSpots };
@@ -97,64 +98,61 @@ export class TurnMeterDeplete implements Modifier {
 
 function replaceBuffDebuff(buffsDebuffs: BuffDebuff[], buffDebuff: BuffDebuff) {
   const rest = buffsDebuffs.filter(
-    bd => bd.name !== buffDebuff.name && bd.value !== buffDebuff.value
+    (bd) => bd.name !== buffDebuff.name && bd.value !== buffDebuff.value
   );
 
   return [...rest, { ...buffDebuff }];
 }
 export class ApplySpeedBuff implements Modifier {
+  static buffName = "speed buff";
   buff: BuffDebuff;
   constructor(buff: BuffDebuffState) {
-    this.buff = { ...buff, name: "speed buff" };
+    this.buff = { ...buff, name: ApplySpeedBuff.buffName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
     return { ...champion, buffs: replaceBuffDebuff(champion.buffs, this.buff) };
   }
   toString() {
-    return `${this.buff.name} ${this.buff.value}% for ${
-      this.buff.turns
-    } turn(s)`;
+    return `${this.buff.name} ${this.buff.value}% for ${this.buff.turns} turn(s)`;
   }
 }
 
-export class ApplySpeedDebuff implements Modifier {
-  debuff: BuffDebuff;
-
+export class ApplySpeedDeBuff implements Modifier {
+  static deBuffName = "speed debuff";
+  deBuff: BuffDebuff;
   constructor(debuff: BuffDebuffState) {
-    this.debuff = { ...debuff, name: "speed debuff" };
+    this.deBuff = { ...debuff, name: ApplySpeedDeBuff.deBuffName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
-    return { ...champion, deBuffs: [...champion.deBuffs, this.debuff] };
+    return { ...champion, deBuffs: [...champion.deBuffs, this.deBuff] };
   }
   toString() {
-    return `${this.debuff.name} ${this.debuff.value}% for ${
-      this.debuff.turns
-    } turn(s)`;
+    return `${this.deBuff.name} ${this.deBuff.value}% for ${this.deBuff.turns} turn(s)`;
   }
 }
 export class SkillDefinition {
-  teamModifiers: Modifier[];
+  currentTeamModifiers: Modifier[];
   opposingTeamModifiers: Modifier[];
   constructor({
     teamModifiers = [],
-    opposingTeamModifiers = []
+    opposingTeamModifiers = [],
   }: SkillDefinitionParams) {
-    this.teamModifiers = teamModifiers;
+    this.currentTeamModifiers = teamModifiers;
     this.opposingTeamModifiers = opposingTeamModifiers;
   }
 
   toString() {
     const result: string[] = [];
 
-    if (this.teamModifiers.length > 0) {
+    if (this.currentTeamModifiers.length > 0) {
       result.push(
-        `Allies: ${this.teamModifiers.map(s => s.toString()).join(", ")}`
+        `Allies: ${this.currentTeamModifiers.map((s) => s.toString()).join(", ")}`
       );
     }
     if (this.opposingTeamModifiers.length > 0) {
       result.push(
         `Enemies: ${this.opposingTeamModifiers
-          .map(s => s.toString())
+          .map((s) => s.toString())
           .join(", ")}`
       );
     }
@@ -172,28 +170,28 @@ export type SkillDefinitionParams = {
 export const aoe15TurnMeterFill30SpeedBuff = new SkillDefinition({
   teamModifiers: [
     new TurnMeterFill(15),
-    new ApplySpeedBuff({ value: 30, turns: 2 })
-  ]
+    new ApplySpeedBuff({ value: 30, turns: 2 }),
+  ],
 });
 
 export const aoe20TurnMeterFill = new SkillDefinition({
-  teamModifiers: [new TurnMeterFill(20)]
+  teamModifiers: [new TurnMeterFill(20)],
 });
 export const aoe30TurnMeterFill = new SkillDefinition({
-  teamModifiers: [new TurnMeterFill(30)]
+  teamModifiers: [new TurnMeterFill(30)],
 });
 export const aoe30TurnMeterFill30SpeedBuffEnemy30TurnMeterDecrease = new SkillDefinition(
   {
     teamModifiers: [
       new TurnMeterFill(30),
-      new ApplySpeedBuff({ value: 30, turns: 2 })
+      new ApplySpeedBuff({ value: 30, turns: 2 }),
     ],
-    opposingTeamModifiers: [new TurnMeterDeplete(30)]
+    opposingTeamModifiers: [new TurnMeterDeplete(30)],
   }
 );
 
 export const aoe30SpeedDebuffEnemy = new SkillDefinition({
-  opposingTeamModifiers: [new ApplySpeedDebuff({ value: 30, turns: 2 })]
+  opposingTeamModifiers: [new ApplySpeedDeBuff({ value: 30, turns: 2 })],
 });
 
 export const defaultSkill = new SkillDefinition({});
@@ -220,7 +218,7 @@ export type SkillMapState = {
 };
 
 export const championDefinitions: ChampionDefinition[] = [
-  { name: "Arbiter", activeSkills: [], passiveSkills: [] }
+  { name: "Arbiter", activeSkills: [], passiveSkills: [] },
 ];
 
 export type ChampionDefinition = {
@@ -232,24 +230,33 @@ export type ChampionDefinition = {
 export const initialSkillMappingsState: SkillMapState[] = [
   {
     championId: { champ: 0, team: "team1" },
-    skills: championDefinitions[0]
-  }
+    skills: championDefinitions[0],
+  },
 ];
 
-export function orderChampionsByTurnMeter(state: BattleState) {
-  return state.game.participants.sort((c1, c2) => c2.turnMeter - c1.turnMeter);
-}
-
 function calculateTurnMeter(champ: ChampionGameState) {
-  return champ.turnMeter + getFillRate(champ.speed);
+  let multiplier = 1;
+
+  const speedBuff = champ.buffs.find((b) => b.name === ApplySpeedBuff.buffName);
+  if (speedBuff) {
+    multiplier = multiplier * (speedBuff.value / 100 + 1);
+  }
+  const speedDeBuff = champ.deBuffs.find(
+    (b) => b.name === ApplySpeedDeBuff.deBuffName
+  );
+  if (speedDeBuff) {
+    multiplier = multiplier / (speedDeBuff.value / 100 + 1);
+  }
+
+  return champ.turnMeter + getFillRate(champ.speed * multiplier);
 }
 
 export function updateTurnMeter(
   participants: ChampionGameState[]
 ): ChampionGameState[] {
-  return participants.map(participants => ({
+  return participants.map((participants) => ({
     ...participants,
-    turnMeter: calculateTurnMeter(participants)
+    turnMeter: calculateTurnMeter(participants),
   }));
 }
 
@@ -258,11 +265,11 @@ export function resetTurnMeterAndBuffsDeBuffs(
 ): ChampionGameState[] {
   const newParticipants = [...participants];
 
-  return newParticipants.map(newParticipant => ({
+  return newParticipants.map((newParticipant) => ({
     ...newParticipant,
     turnMeter: 0,
     speedBuff: [],
-    speedDebuff: []
+    speedDebuff: [],
   }));
 }
 
@@ -272,6 +279,6 @@ export function fillChampionSpots(
 ) {
   return {
     team1: Array.from(Array(team1PlayersCount), () => ({})),
-    team2: Array.from(Array(team2PlayersCount), () => ({}))
+    team2: Array.from(Array(team2PlayersCount), () => ({})),
   };
 }

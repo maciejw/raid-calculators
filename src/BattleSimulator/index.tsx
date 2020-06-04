@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup, Container, Form, Col, Row, ListGroup, Badge } from 'react-bootstrap';
 import { useReducer } from 'react';
-import { battleReducer, initialArenaState } from './battleReducer';
+import { battleReducer, initialBattleState } from './battleReducer';
 
 import { Ticker } from './Ticker';
 import { Champion, ChampionProps } from './Champion';
@@ -40,7 +40,7 @@ function BattleLog({ events = [] }: BattleLogProps) {
     <ListGroup>
       {events.map(({ info, champ, team, order }) => {
         return (
-          <ListGroup.Item>
+          <ListGroup.Item key={order}>
             <b>{order}</b>: Champion <ChampionInfo {...{ champ, team }} /> used{' '}
             <span style={{ fontWeight: 'bold' }}>{info}</span> skill
           </ListGroup.Item>
@@ -91,10 +91,10 @@ function Team({ onSpeedChanged, activeMember, team, teamMembers, teamMembersGame
 }
 
 export function BattleSimulator() {
-  const [arenaState, arenaDispatch] = useReducer(battleReducer, initialArenaState);
+  const [arenaState, arenaDispatch] = useReducer(battleReducer, initialBattleState);
   const { turnOwner } = arenaState.game;
 
-  const enabled = turnOwner === undefined && arenaState.activeGame;
+  const enabled = turnOwner === undefined && arenaState.isGameLoopRunning;
 
   function dispatchUseSkill(skill: SkillDefinition) {
     arenaDispatch({
@@ -133,7 +133,7 @@ export function BattleSimulator() {
                         id="continuous-ticks"
                         label="Emit ticks continuously"
                         onChange={() => arenaDispatch({ type: 'ToggleBattle' })}
-                        checked={arenaState.activeGame}
+                        checked={arenaState.isGameLoopRunning}
                       />
                       <Button variant="outline-secondary" onClick={() => arenaDispatch({ type: 'Tick' })}>
                         Emit single tick
