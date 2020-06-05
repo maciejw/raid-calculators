@@ -114,7 +114,10 @@ export class ApplySpeedBuff implements Modifier {
     this.buff = { ...buff, name: ApplySpeedBuff.modifierName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
-    return { ...champion, buffs: replaceBuffDebuff(champion.buffs, this.buff) };
+    return {
+      ...champion,
+      buffs: replaceBuffDebuff(champion.buffs, { ...this.buff }),
+    };
   }
   toString() {
     return `${this.buff.name} ${this.buff.value}% for ${this.buff.turns} turn(s)`;
@@ -128,7 +131,10 @@ export class ApplySpeedDeBuff implements Modifier {
     this.deBuff = { ...debuff, name: ApplySpeedDeBuff.modifierName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
-    return { ...champion, deBuffs: [...champion.deBuffs, this.deBuff] };
+    return {
+      ...champion,
+      deBuffs: replaceBuffDebuff(champion.deBuffs, { ...this.deBuff }),
+    };
   }
   toString() {
     return `${this.deBuff.name} ${this.deBuff.value}% for ${this.deBuff.turns} turn(s)`;
