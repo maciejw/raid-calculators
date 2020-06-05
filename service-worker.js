@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/raid-calculators/precache-manifest.6beb4dd75e662ac9901d45c65bb264a5.js"
+  "/raid-calculators/precache-manifest.415e0c2f90b09a14c585149f15baabbc.js"
 );
 
 self.addEventListener('message', (event) => {

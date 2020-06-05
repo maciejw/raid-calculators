@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,KACE,QAAS,CACT,SACF,CAEA,YACE,aAAc,CACd,SAAU,CACV,eACF","file":"main.f1f3381c.chunk.css","sourcesContent":["body {\n  margin: 0;\n  padding: 0;\n}\n\nbutton.card {\n  display: block;\n  padding: 0;\n  text-align: left;\n}\n"]}
