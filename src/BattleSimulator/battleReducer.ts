@@ -11,17 +11,27 @@ import {
   sameChampionOrTeam,
   ChampionFilterCriteria,
   BuffDebuff,
+  GameSettings,
 } from "./state";
 import { sortingSpecification } from "./compare";
 
-export const initialBattleState: BattleState = {
-  isGameLoopRunning: false,
-  battleEvents: [],
-  game: {
-    participants: [],
-  },
-  teams: fillChampionSpots(5, 1),
-};
+export function initialBattleState({
+  teamCounts = { team1: 5, team2: 5 },
+  simulationSpeed = 300,
+}: Partial<GameSettings>): BattleState {
+  return {
+    isGameLoopRunning: false,
+    battleEvents: [],
+    game: {
+      participants: [],
+    },
+    teams: {
+      team1: fillChampionSpots(teamCounts.team1),
+      team2: fillChampionSpots(teamCounts.team2),
+    },
+    gameSettings: { teamCounts, simulationSpeed },
+  };
+}
 
 function modifyParticipants(
   participants: ChampionGameState[],
@@ -150,8 +160,10 @@ export function battleReducer(
           (participant) => {
             const newParticipant = { ...participant, turnMeter: 0 };
 
-            newParticipant.buffs = decrementBuffsDeBuffs(newParticipant.buffs)
-            newParticipant.deBuffs = decrementBuffsDeBuffs(newParticipant.deBuffs)
+            newParticipant.buffs = decrementBuffsDeBuffs(newParticipant.buffs);
+            newParticipant.deBuffs = decrementBuffsDeBuffs(
+              newParticipant.deBuffs
+            );
 
             return newParticipant;
           }
@@ -194,9 +206,47 @@ export function battleReducer(
         return state;
       }
     }
-    default:
-      throw new Error("unknown dispatch type");
+    case "UpdateTeamCount": {
+      const newState: BattleState = {
+        ...state,
+        gameSettings: {
+          ...state.gameSettings,
+          teamCounts: {
+            ...state.gameSettings.teamCounts,
+            [action.payload.setting]: action.payload.value,
+          },
+        },
+      };
+      return updateTeamCount(newState, action.payload.setting);
+    }
+    case "UpdateSimulationSpeedSettings": {
+      return {
+        ...state,
+        gameSettings: {
+          ...state.gameSettings,
+          simulationSpeed: action.payload,
+        },
+      };
+    }
   }
+  assertUnreachable(action);
+}
+
+function updateTeamCount(state: BattleState, team: TeamSpots): BattleState {
+  return {
+    ...state,
+    teams: {
+      ...state.teams,
+      [team]: fillChampionSpots(state.gameSettings.teamCounts[team]),
+    },
+    game: {
+      participants: [...state.game.participants.filter((p) => p.team !== team)],
+    },
+  };
+}
+
+function assertUnreachable(x: never): never {
+  throw new Error("Unreachable code");
 }
 
 function decrementBuffsDeBuffs(buffsDeBuffs: BuffDebuff[]) {

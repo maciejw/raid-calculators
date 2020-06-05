@@ -3,8 +3,10 @@ import { useEffect } from "react";
 
 export function Ticker({
   onTick,
-  enable = false,
+  enable,
+  speed,
 }: {
+  speed: number;
   onTick: () => void;
   enable?: boolean;
 }) {
@@ -13,10 +15,10 @@ export function Ticker({
       if (enable) {
         onTick();
       }
-    }, 200);
+    }, speed);
     return () => {
       window.clearTimeout(interval);
     };
   });
-  return <React.Fragment />;
+  return null;
 }

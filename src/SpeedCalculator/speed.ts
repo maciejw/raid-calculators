@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-let log: typeof console.log = () => {};
-log = console.log;
+import { logger } from "../logger";
 
 export const ROUND_TO_DECIMAL_PLACES = 2;
 
@@ -28,7 +26,7 @@ export function calculateRealSpeedFromTotal({
   loreOfSteelPresent = false,
   numberOfSpeedSets = 0,
 }: SpeedTotalParameters): number {
-  log('input parameters', {
+  logger("input parameters", {
     baseSpeed,
     totalSpeed,
     aura,
@@ -37,32 +35,32 @@ export function calculateRealSpeedFromTotal({
   });
 
   const auraBonus = getAuraBonus(baseSpeed, aura);
-  log('auraBonus', auraBonus);
+  logger("auraBonus", auraBonus);
 
   const loreOfSteelBonus = getLoreOfSteelBonus(
     baseSpeed,
     numberOfSpeedSets,
     loreOfSteelPresent
   );
-  log('loreOfSteelBonus', loreOfSteelBonus);
+  logger("loreOfSteelBonus", loreOfSteelBonus);
 
   const loreOfSteelBonusRounded = numberRoundDecimal(loreOfSteelBonus);
-  log('loreOfSteelBonusRounded', loreOfSteelBonusRounded);
+  logger("loreOfSteelBonusRounded", loreOfSteelBonusRounded);
 
   const speedSetBonus = getSpeedSetBonus(baseSpeed, numberOfSpeedSets);
-  log('speedSetBonus', speedSetBonus);
+  logger("speedSetBonus", speedSetBonus);
 
   const speedSetBonusRounded = numberRoundDecimal(speedSetBonus);
-  log('speedSetBonusRounded', speedSetBonusRounded);
+  logger("speedSetBonusRounded", speedSetBonusRounded);
 
   const artifactSpeed =
     totalSpeed - baseSpeed - loreOfSteelBonusRounded - speedSetBonusRounded;
-  log('artifactSpeed', artifactSpeed);
+  logger("artifactSpeed", artifactSpeed);
 
   const realSpeedBeforeRounding =
     auraBonus + baseSpeed + speedSetBonus + loreOfSteelBonus + artifactSpeed;
 
-  log('realSpeedBeforeRounding', realSpeedBeforeRounding);
+  logger("realSpeedBeforeRounding", realSpeedBeforeRounding);
   return numberRoundDecimal(realSpeedBeforeRounding, ROUND_TO_DECIMAL_PLACES);
 }
 export function calculateRealSpeedFromArtifacts({
@@ -72,7 +70,7 @@ export function calculateRealSpeedFromArtifacts({
   loreOfSteelPresent = false,
   numberOfSpeedSets = 0,
 }: SpeedComponentParameters): number {
-  log('input parameters', {
+  logger("input parameters", {
     baseSpeed,
     artifactSpeed,
     aura,
@@ -81,23 +79,23 @@ export function calculateRealSpeedFromArtifacts({
   });
 
   const auraBonus = getAuraBonus(baseSpeed, aura);
-  log('auraBonus', auraBonus);
+  logger("auraBonus", auraBonus);
 
   const loreOfSteelBonus = getLoreOfSteelBonus(
     baseSpeed,
     numberOfSpeedSets,
     loreOfSteelPresent
   );
-  log('loreOfSteelBonus', loreOfSteelBonus);
+  logger("loreOfSteelBonus", loreOfSteelBonus);
 
   const speedSetBonus = getSpeedSetBonus(baseSpeed, numberOfSpeedSets);
-  log('speedSetBonus', speedSetBonus);
+  logger("speedSetBonus", speedSetBonus);
 
   const speedSetBonusRounded = numberRoundDecimal(speedSetBonus);
-  log('speedSetBonusRounded', speedSetBonusRounded);
+  logger("speedSetBonusRounded", speedSetBonusRounded);
 
   const artifactStatSubStatSpeed = artifactSpeed - speedSetBonusRounded;
-  log('realArtifactSpeed', artifactStatSubStatSpeed);
+  logger("realArtifactSpeed", artifactStatSubStatSpeed);
 
   const realSpeedBeforeRounding =
     baseSpeed +
@@ -105,7 +103,7 @@ export function calculateRealSpeedFromArtifacts({
     artifactStatSubStatSpeed +
     speedSetBonus +
     loreOfSteelBonus;
-  log('realSpeedBeforeRounding', realSpeedBeforeRounding);
+  logger("realSpeedBeforeRounding", realSpeedBeforeRounding);
 
   return numberRoundDecimal(realSpeedBeforeRounding, ROUND_TO_DECIMAL_PLACES);
 }

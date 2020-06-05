@@ -2,10 +2,14 @@ const tsconfig = require("./tsconfig.json");
 
 const sources = "src/**/*.ts?(x)";
 const tests = "src/**/*.test.ts?(x)";
+const typings = "src/**/*.d.ts";
 
+function not(wildcard) {
+  return `!${wildcard}`;
+}
 module.exports = function (wallaby) {
   return {
-    files: [sources, `!${tests}`],
+    files: [sources, not(tests), not(typings)],
     testFramework: "jest",
     debug: true,
     env: {
@@ -13,7 +17,7 @@ module.exports = function (wallaby) {
     },
     tests: [tests],
     compilers: {
-      [tests]: wallaby.compilers.typeScript({
+      [sources]: wallaby.compilers.typeScript({
         ...tsconfig.compilerOptions,
         module: "CommonJS",
       }),

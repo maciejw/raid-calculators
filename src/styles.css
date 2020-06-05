@@ -1,13 +1,6 @@
-.ProgressBar {
-  width: 100%;
-  border: 1px solid gray;
-  padding: 2px;
-}
-
-.ProgressBar .Progress {
-  background-color: khaki;
-  color: dimgray;
-  white-space: pre;
+body {
+  margin: 0;
+  padding: 0;
 }
 
 button.card {

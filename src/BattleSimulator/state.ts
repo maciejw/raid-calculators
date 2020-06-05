@@ -1,5 +1,4 @@
 import { getFillRate } from "./turnMeter";
-import { sortingSpecification } from "./compare";
 
 export type BuffDebuffState = {
   value: number;
@@ -32,11 +31,16 @@ export type BattleLogEvent = {
   order: number;
 } & ChampionId;
 
+export type GameSettings = {
+  teamCounts: Record<TeamSpots, number>;
+  simulationSpeed: number;
+};
+
 export type BattleState = { battleEvents: BattleLogEvent[] } & {
   teams: TeamsState;
 } & { game: GameState } & {
   isGameLoopRunning: boolean;
-};
+} & { gameSettings: GameSettings };
 
 export type ChampionId = { champ: number; team: TeamSpots };
 
@@ -146,7 +150,9 @@ export class SkillDefinition {
 
     if (this.currentTeamModifiers.length > 0) {
       result.push(
-        `Allies: ${this.currentTeamModifiers.map((s) => s.toString()).join(", ")}`
+        `Allies: ${this.currentTeamModifiers
+          .map((s) => s.toString())
+          .join(", ")}`
       );
     }
     if (this.opposingTeamModifiers.length > 0) {
@@ -202,13 +208,19 @@ export type SkillUse = ChampionId & {
   skill: SkillDefinition;
 };
 
+type Setting<T, P extends keyof T = keyof T> = {
+  setting: P;
+  value: T[P];
+};
 export type Actions =
   | { type: "SpeedChanged"; payload: SpeedChange }
-  | { type: "ToggleChampion"; payload: ChampionId }
+  //  | { type: "ToggleChampion"; payload: ChampionId }
   | { type: "Tick" }
   | { type: "Reset" }
   | { type: "ToggleBattle" }
-  | { type: "UseSkill"; payload: SkillUse };
+  | { type: "UseSkill"; payload: SkillUse }
+  | { type: "UpdateTeamCount"; payload: Setting<GameSettings["teamCounts"]> }
+  | { type: "UpdateSimulationSpeedSettings"; payload: number };
 
 export type Skill = {};
 
@@ -273,12 +285,6 @@ export function resetTurnMeterAndBuffsDeBuffs(
   }));
 }
 
-export function fillChampionSpots(
-  team1PlayersCount: number,
-  team2PlayersCount: number
-) {
-  return {
-    team1: Array.from(Array(team1PlayersCount), () => ({})),
-    team2: Array.from(Array(team2PlayersCount), () => ({})),
-  };
+export function fillChampionSpots(spotCount: number) {
+  return Array.from(Array(spotCount), () => ({}));
 }

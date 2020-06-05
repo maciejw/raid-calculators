@@ -1,6 +1,7 @@
+import { logger } from "../logger";
 import {
   calculateRealSpeedFromArtifacts,
-  calculateRealSpeedFromTotal
+  calculateRealSpeedFromTotal,
 } from "./speed";
 
 describe("Real speed calculator", () => {
@@ -27,15 +28,15 @@ describe("Real speed calculator", () => {
       numberOfSpeedSets,
       aura,
       loreOfSteelPresent,
-      expectedResult
+      expectedResult,
     }) => {
-      console.log("champion", champion);
+      logger("champion", champion);
       const result = calculateRealSpeedFromArtifacts({
         baseSpeed,
         artifactSpeed,
         numberOfSpeedSets,
         aura,
-        loreOfSteelPresent
+        loreOfSteelPresent,
       });
 
       expect(result).toBe(expectedResult);
@@ -65,15 +66,15 @@ describe("Real speed calculator", () => {
       numberOfSpeedSets,
       aura,
       loreOfSteelPresent,
-      expectedResult
+      expectedResult,
     }) => {
-      console.log("champion", champion);
+      logger("champion", champion);
       const result = calculateRealSpeedFromTotal({
         baseSpeed,
         totalSpeed,
         numberOfSpeedSets,
         aura,
-        loreOfSteelPresent
+        loreOfSteelPresent,
       });
 
       expect(result).toBe(expectedResult);
