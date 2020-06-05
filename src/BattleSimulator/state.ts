@@ -1,4 +1,4 @@
-import { getFillRate } from "./turnMeter";
+import { calculateTurnMeter } from "./turnMeter";
 
 export type BuffDebuffState = {
   value: number;
@@ -108,10 +108,10 @@ function replaceBuffDebuff(buffsDebuffs: BuffDebuff[], buffDebuff: BuffDebuff) {
   return [...rest, { ...buffDebuff }];
 }
 export class ApplySpeedBuff implements Modifier {
-  static buffName = "speed buff";
+  static modifierName = "speed buff";
   buff: BuffDebuff;
   constructor(buff: BuffDebuffState) {
-    this.buff = { ...buff, name: ApplySpeedBuff.buffName };
+    this.buff = { ...buff, name: ApplySpeedBuff.modifierName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
     return { ...champion, buffs: replaceBuffDebuff(champion.buffs, this.buff) };
@@ -122,10 +122,10 @@ export class ApplySpeedBuff implements Modifier {
 }
 
 export class ApplySpeedDeBuff implements Modifier {
-  static deBuffName = "speed debuff";
+  static modifierName = "speed debuff";
   deBuff: BuffDebuff;
   constructor(debuff: BuffDebuffState) {
-    this.deBuff = { ...debuff, name: ApplySpeedDeBuff.deBuffName };
+    this.deBuff = { ...debuff, name: ApplySpeedDeBuff.modifierName };
   }
   apply(champion: ChampionGameState): ChampionGameState {
     return { ...champion, deBuffs: [...champion.deBuffs, this.deBuff] };
@@ -245,23 +245,6 @@ export const initialSkillMappingsState: SkillMapState[] = [
     skills: championDefinitions[0],
   },
 ];
-
-function calculateTurnMeter(champ: ChampionGameState) {
-  let multiplier = 1;
-
-  const speedBuff = champ.buffs.find((b) => b.name === ApplySpeedBuff.buffName);
-  if (speedBuff) {
-    multiplier = multiplier * (speedBuff.value / 100 + 1);
-  }
-  const speedDeBuff = champ.deBuffs.find(
-    (b) => b.name === ApplySpeedDeBuff.deBuffName
-  );
-  if (speedDeBuff) {
-    multiplier = multiplier / (speedDeBuff.value / 100 + 1);
-  }
-
-  return champ.turnMeter + getFillRate(champ.speed * multiplier);
-}
 
 export function updateTurnMeter(
   participants: ChampionGameState[]
