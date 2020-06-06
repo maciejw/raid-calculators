@@ -182,7 +182,9 @@ export function BattleSimulator() {
                         onChange={() =>
                           battleDispatch({ type: "ToggleBattle" })
                         }
-                        value={[battleState.isGameLoopRunning]}
+                        value={[
+                          battleState.isGameLoopRunning ? true : undefined,
+                        ]}
                       >
                         <ToggleButton value={true} variant="outline-secondary">
                           Emit ticks continuously
