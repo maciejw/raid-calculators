@@ -22,7 +22,7 @@ export function Navigation() {
           </Link>
         </Nav>
       </Navbar.Collapse>
-      <Navbar.Collapse id="extra-navbar-nav">
+      <Navbar.Collapse id="extra-navbar-nav" className="justify-content-end">
         <Nav>
           <NavLink
             title="Project repository"
